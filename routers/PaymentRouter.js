@@ -5,6 +5,8 @@ const paymentController = require("../controllers/paymentController");
 const { validationBody, validationParams, baseSchema } = require("../validator");
 const paymentSchema = require("../validator/payment");
 
+
+// 
 router.route('/get-all')
     .get(
         passport.authenticate('jwt', { session: false }),

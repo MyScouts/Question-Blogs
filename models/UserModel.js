@@ -46,6 +46,14 @@ const userSchema = new Schema({
         enum: ["student", "teacher"],
         default: "student"
     },
+    balance: {
+        type: Number,
+        default: 0,
+    },
+    point: {
+        type: Number,
+        default: 0,
+    },
     logical_delete: {
         type: Date,
         default: null
@@ -60,18 +68,6 @@ const userSchema = new Schema({
         },
     }
 })
-
-// custom server
-// userSchema.pre('save', async function (next) {
-//     try {
-//         const salt = await bcrypt.genSalt(10)
-//         const passwordHashed = await bcrypt.hash(this.password, salt)
-//         this.password = passwordHashed
-//         next()
-//     } catch (error) {
-//         next(error)
-//     }
-// })
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
     try {

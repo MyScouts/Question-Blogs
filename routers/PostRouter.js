@@ -16,7 +16,12 @@ router.route('/')
         validationBody(postSchemas.createPost),
         postController.createPostMethod
     )
-
+router.route('/get-all')
+    .get(
+        validationQuery(baseSchema.page, 'page'),
+        validationQuery(baseSchema.pageSize, 'pageSize'),
+        postController.getAllPostsMethod
+    )
 router.route('/:postId/like')
     .post(
         passport.authenticate('jwt', { session: false }),
@@ -27,4 +32,6 @@ router.route('/:postId')
     .get(
         postController.getPostByIdMethod
     )
+
+
 module.exports = router

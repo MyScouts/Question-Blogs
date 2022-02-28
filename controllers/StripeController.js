@@ -53,5 +53,6 @@ const checkOutMethod = async (customerId, paymentMethodId) => {
 
 module.exports = {
     createCustomer,
-    createPaymentMethod
+    createPaymentMethod,
+    checkOutMethod
 }

@@ -60,6 +60,8 @@ const likePostMethod = async (req, res) => {
     }
 }
 
+
+
 const getMyPostsMethod = async (req, res) => {
     const userId = req.user.userId
     const { page, pageSize } = req.value.query;
@@ -181,7 +183,6 @@ const getPostByIdMethod = async (req, res) => {
                             firstName: { $arrayElemAt: ["$user.firstName", 0] },
                             lastName: { $arrayElemAt: ["$user.lastName", 0] },
                             avatar: { $arrayElemAt: ["$user.avatar", 0] },
-
                         }
                     }
                 ],
@@ -224,11 +225,104 @@ const getPostByIdMethod = async (req, res) => {
     return responseSuccess(res, 200, "Get post by id successfully!", post[0])
 }
 
+const getAllPostsMethod = async (req, res) => {
+    const { page, pageSize } = req.value.query;
+
+    const postsQuery = PostModel.aggregate([
+        {
+            $lookup: {
+                from: "user_like_posts",
+                let: { postId: "$postId" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$postId", "$$postId"] },
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "userId",
+                            foreignField: "userId",
+                            as: "user"
+                        },
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            postId: 1,
+                            userId: 1,
+                            firstName: { $arrayElemAt: ["$user.firstName", 0] },
+                            lastName: { $arrayElemAt: ["$user.lastName", 0] },
+                            avatar: { $arrayElemAt: ["$user.avatar", 0] },
+                        }
+                    }
+                ],
+                as: "likes"
+            }
+        }, {
+            $lookup: {
+                from: 'comments',
+                let: { postId: "$postId" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$postId", "$$postId"] },
+                                ]
+                            }
+                        }
+                    },
+                ],
+                as: "comments"
+            }
+        },
+        {
+            $sort: {
+                createdAt: -1,
+                status: -1
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                postId: 1,
+                content: 1,
+                subject: 1,
+                grade: 1,
+                level: 1,
+                status: 1,
+                price: 1,
+                couponId: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                userId: 1,
+                likes: 1,
+            }
+        },
+        {
+            $addFields: {
+                likeCount: {
+                    $size: "$likes"
+                }
+            }
+        }
+    ])
+
+    const posts = await PostModel.aggregatePaginate(postsQuery, PAGINATE_CONFIG(page, pageSize));
+    return responseSuccess(res, 200, "Get all posts successfully!", posts)
+}
 
 
 module.exports = {
     createPostMethod,
     likePostMethod,
     getMyPostsMethod,
-    getPostByIdMethod
+    getPostByIdMethod,
+    getAllPostsMethod
 }

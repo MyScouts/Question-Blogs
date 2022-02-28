@@ -3,10 +3,6 @@ const Schema = mongoose.Schema
 const aggregatePaginate = require('mongoose-aggregate-paginate-v2')
 
 const notificationSchema = new Schema({
-    title: {
-        type: String,
-        required: true,
-    },
     content: {
         type: String,
         required: true,

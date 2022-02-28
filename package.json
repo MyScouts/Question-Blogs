@@ -29,6 +29,8 @@
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
-    "stripe": "^8.205.0"
+    "stripe": "^8.205.0",
+    "vn-payments": "^1.1.0",
+    "vnpay": "^1.0.2"
   }
 }

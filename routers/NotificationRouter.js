@@ -6,4 +6,8 @@ const notificationController = require('../controllers/NotificationController')
 //
 router.route('/me')
     .get(passport.authenticate('jwt', { session: false }), notificationController.getMyNotificationsMethod)
+
+router.route('/:notificationId')
+    .put(passport.authenticate('jwt', { session: false }), notificationController.makeReadNotificationMethod)
+    .delete(passport.authenticate('jwt', { session: false }), notificationController.deleteNotificationMethod)
 module.exports = router
